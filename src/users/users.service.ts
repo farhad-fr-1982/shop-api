@@ -53,6 +53,14 @@ export class UsersService {
     return user
   }
 
+  async findOneByMobile(mobile: string) {
+    const user = await this.userRepository.findOne({ where: { mobile } })
+    if (!user) {
+      throw new NotFoundException('کاربری یافت نشد')
+    }
+    return user
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id)
     if (!user) {
