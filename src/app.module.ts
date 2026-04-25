@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { AddressModule } from './address/address.module';
 import { User } from './users/entities/user.entity';
 import { Address } from './address/entities/address.entity';
+import { TicketsModule } from './tickets/tickets.module';
+import { Ticket } from './tickets/entities/ticket.entity';
 
 @Module({
   imports: [
@@ -23,13 +25,14 @@ import { Address } from './address/entities/address.entity';
       username: process.env.DB_USERNAME!,
       password: process.env.DB_PASSWORD!,
       database: process.env.DB_DATABASE!,
-       entities: [User, Address], 
+       entities: [User, Address,Ticket], 
       // autoLoadEntities: true,
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
     AddressModule,
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
