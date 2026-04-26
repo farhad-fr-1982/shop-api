@@ -10,6 +10,10 @@ import { User } from './users/entities/user.entity';
 import { Address } from './address/entities/address.entity';
 import { TicketsModule } from './tickets/tickets.module';
 import { Ticket } from './tickets/entities/ticket.entity';
+import { ProductsModule } from './products/products.module';
+import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
+import { Product } from './products/entities/product.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { Ticket } from './tickets/entities/ticket.entity';
       username: process.env.DB_USERNAME!,
       password: process.env.DB_PASSWORD!,
       database: process.env.DB_DATABASE!,
-       entities: [User, Address,Ticket], 
+       entities: [User, Address,Ticket,Category,Product], 
       // autoLoadEntities: true,
       synchronize: true,
     }),
@@ -33,6 +37,8 @@ import { Ticket } from './tickets/entities/ticket.entity';
     AuthModule,
     AddressModule,
     TicketsModule,
+    ProductsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
