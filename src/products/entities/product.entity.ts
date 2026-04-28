@@ -10,7 +10,7 @@ export class Product {
     title: string
 
     @Column({ nullable: false })
-    descriptions: string
+    description: string
 
     @Column({ nullable: false })
     price: number
