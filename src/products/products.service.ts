@@ -5,13 +5,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { In, Repository } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
+import { BookmarkProduct } from './entities/product-bookmark.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ProductsService {
 
   constructor(
     @InjectRepository(Product) private readonly productRepository: Repository<Product>,
-    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>
+    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(BookmarkProduct) private readonly bookmarkProductRepository: Repository<BookmarkProduct>,
+    private readonly userService: UsersService,
   ) { }
 
 
@@ -64,4 +68,55 @@ export class ProductsService {
   remove(id: number) {
     return `This action removes a #${id} product`;
   }
+
+  async toggleBookmark(userId: number, productId: number): Promise<BookmarkProduct | { message: string }> {
+    // چک کردن وجود کاربر و محصول
+    const user = await this.userService.findOne(userId);
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+
+    if (!user || !product) {
+      throw new NotFoundException('کاربر یا محصول یافت نشد');
+    }
+
+    // بررسی وجود بوکمارک
+    const existingBookmark = await this.bookmarkProductRepository.findOne({
+      where: {
+        user: { id: userId },
+        product: { id: productId }
+      },
+    });
+
+    if (existingBookmark) {
+      // اگر بوکمارک وجود داشت، حذف می‌کنیم
+      await this.bookmarkProductRepository.remove(existingBookmark);
+      return { message: 'بوکمارک با موفقیت حذف شد' };
+    } else {
+      // اگر بوکمارک وجود نداشت، ایجاد می‌کنیم
+      const newBookmark = this.bookmarkProductRepository.create({
+        user: { id: userId },
+        product: { id: productId },
+      });
+      return await this.bookmarkProductRepository.save(newBookmark);
+    }
+  }
+
+  async addItemtoBasket(userId: number, productId: number) {
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+
+    if (!product) {
+      throw new Error('محصول یافت نشد');
+    }
+
+    return await this.userService.addProductToBasket(userId, product); // ✅ اسم درست
+  }
+
+  async removeItemFromBasket(userId: number, productId: number) {
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+
+    if (!product) {
+        throw new Error('محصول یافت نشد');
+    }
+
+    return await this.userService.removeProductFromBasket(userId, product);
+}
 }

@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+// address.entity.ts
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 @Entity()
 export class Address {
@@ -7,7 +9,7 @@ export class Address {
     id: number;
 
     @Column()
-    province: string;  // ✅ درست - نه privince
+    province: string;
 
     @Column()
     city: string;
@@ -19,10 +21,13 @@ export class Address {
     postal_code: string;
 
     @Column({ name: 'receiver_mobile' })
-    receiver_mobile: string;  // ✅ درست - نه reciver_mobile
+    receiver_mobile: string;
 
     @Column({ nullable: true })
     description: string;
+
+    @OneToMany(() => Order, (order) => order.address)  // ← اسم 'address' باید با Order هماهنگ باشد
+    orders: Order[];
 
     @CreateDateColumn({ name: 'createdAt' })
     createdAt: Date;
@@ -31,5 +36,6 @@ export class Address {
     updatedAt: Date;
 
     @ManyToOne(() => User, (user) => user.addresses)
+    @JoinColumn({ name: 'user_id' })
     user: User;
 }

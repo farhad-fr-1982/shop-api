@@ -3,6 +3,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import type { Response } from 'express';
+import { BookmarkProductDto } from './dto/bookmark-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -16,6 +17,47 @@ export class ProductsController {
       statusCode: HttpStatus.OK,
       data: product,
       message: 'محصول با موفقیت ثبت شد'
+    });
+  }
+
+  @Post('bookmark-product')
+  async bookmarkProduct(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response) {
+    const bookmarkdata = await this.productsService.toggleBookmark(
+      bookmarkProduct.user_id,
+      bookmarkProduct.product_id
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkdata,
+      message: 'محصول با موفقیت به سبد خرید اضافه شد'
+    });
+  }
+
+  @Post('add-basket')
+  async addItemToBasket(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response) {
+    const bookmarkdata = await this.productsService.addItemtoBasket(
+      bookmarkProduct.user_id,
+      bookmarkProduct.product_id
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkdata,
+      message: 'عملیات بوکمارک با موفقیت انجام شد'
+    });
+  }
+
+  @Post('remove-basket')
+  async removeItemFromBasket(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response) {
+    await this.productsService.removeItemFromBasket(
+      bookmarkProduct.user_id,
+      bookmarkProduct.product_id
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'محصول با موفقیت از سبد خرید حذف شد'
     });
   }
 

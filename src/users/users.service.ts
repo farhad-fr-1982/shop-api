@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import UserRoleEnum from './enums/userRoleEnum';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class UsersService {
@@ -76,6 +77,24 @@ export class UsersService {
     }
   }
 
+  async addProductToBasket(userId: number, product: Product) {  // ✅ اضافه کردن type
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['basket_items']  // ✅ اضافه شد
+    });
+
+    if (!user) {
+      throw new Error('کاربر یافت نشد');  // ✅ throw جدید
+    }
+
+    if (!user.basket_items) {
+      user.basket_items = [];
+    }
+
+    user.basket_items.push(product);
+    return await this.userRepository.save(user);
+  }
+
   async remove(id: number) {
     const user = await this.findOne(id)
     if (!user) {
@@ -88,5 +107,30 @@ export class UsersService {
     } catch (error) {
       throw new BadRequestException('خطایی در حذف کاربر رخ داده است')
     }
+  }
+
+  async removeProductFromBasket(userId: number, product: Product) {
+    // پیدا کردن کاربر به همراه آیتم‌های سبد خرید
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['basket_items']
+    });
+
+    if (!user) {
+      throw new Error('کاربر یافت نشد');
+    }
+
+    // پیدا کردن آیتم مورد نظر در سبد خرید
+    const productIndex = user.basket_items.findIndex(item => item.id === product.id);
+
+    if (productIndex === -1) {
+      throw new NotFoundException('هیچ محصولی در سبد خرید وجود ندارد');
+    }
+
+    // حذف آیتم از سبد خرید
+    user.basket_items.splice(productIndex, 1);
+
+    // ذخیره تغییرات
+    return await this.userRepository.save(user);
   }
 }

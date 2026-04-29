@@ -14,6 +14,9 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
 import { Product } from './products/entities/product.entity';
+import { BookmarkProduct } from './products/entities/product-bookmark.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -29,7 +32,7 @@ import { Product } from './products/entities/product.entity';
       username: process.env.DB_USERNAME!,
       password: process.env.DB_PASSWORD!,
       database: process.env.DB_DATABASE!,
-       entities: [User, Address,Ticket,Category,Product], 
+       entities: [User, Address,Ticket,Category,Product,BookmarkProduct,Order], 
       // autoLoadEntities: true,
       synchronize: true,
     }),
@@ -39,6 +42,7 @@ import { Product } from './products/entities/product.entity';
     TicketsModule,
     ProductsModule,
     CategoriesModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
