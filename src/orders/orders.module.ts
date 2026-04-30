@@ -8,10 +8,15 @@ import { OrderItem } from './entities/order-item.entity';
 import { User } from '../users/entities/user.entity';
 import { Address } from '../address/entities/address.entity';
 import { Product } from '../products/entities/product.entity';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Order, OrderItem, User, Address, Product])  // ← همه Entity ها اینجا باشن
+        TypeOrmModule.forFeature([Order, OrderItem, User, Address, Product]), 
+        HttpModule.register({ 
+            timeout: 5000,
+            maxRedirects: 5,
+        }),
     ],
     controllers: [OrdersController],
     providers: [OrdersService],

@@ -37,6 +37,15 @@ export class Order {
     @Column({ type: 'varchar', name: 'discount_code', nullable: true })
     discount_code: string | null;
 
+    @Column({ type: 'varchar', name: 'payment_track_id', nullable: true })
+    payment_track_id: string;
+
+    @Column({ type: 'varchar', name: 'payment_authority', nullable: true })
+    payment_authority: string;
+
+    @Column({ type: 'timestamp', name: 'payment_date', nullable: true })
+    payment_date: Date;
+
     @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
     createdAt: Date;
 
