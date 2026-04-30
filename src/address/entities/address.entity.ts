@@ -26,7 +26,7 @@ export class Address {
     @Column({ nullable: true })
     description: string;
 
-    @OneToMany(() => Order, (order) => order.address)  // ← اسم 'address' باید با Order هماهنگ باشد
+    @OneToMany(() => Order, (order) => order.address)
     orders: Order[];
 
     @CreateDateColumn({ name: 'createdAt' })
