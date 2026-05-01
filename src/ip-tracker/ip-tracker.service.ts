@@ -12,54 +12,70 @@ export class IpTrackerService {
     constructor(
         @InjectRepository(IpRecord)
         private readonly ipRepository: Repository<IpRecord>
-    ) {}
+    ) { }
 
     async track(ip: string) {
         const nowTime = new Date();
-        
-        // پیدا کردن رکورد IP در پنجره زمانی فعلی
-        const windowStart = new Date(nowTime.getTime() - this.WINDOW_MINUTES * 60000);
-        
-        let record = await this.ipRepository.findOne({ 
-            where: { 
-                ip: ip,
-                WindowStart: MoreThan(windowStart)
-            } 
+        const cleanIp = ip.replace('::ffff:', '');
+
+        // ابتدا بررسی کن IP بلاک شده؟
+        const blockedRecord = await this.ipRepository.findOne({
+            where: {
+                ip: cleanIp,
+                isBlocked: true,
+                blockUnit: MoreThan(nowTime)
+            }
+        });
+
+        if (blockedRecord) {
+            if (blockedRecord.blockUnit) {  // اضافه کنید
+                console.log(`[${nowTime.toLocaleTimeString()}] 🚫 ${cleanIp} is BLOCKED until ${blockedRecord.blockUnit.toLocaleTimeString()}`);
+                return { isBlocked: true, blockUntil: blockedRecord.blockUnit };
+            }
+        }
+
+        // پنجره زمانی دقیقه جاری
+        const currentMinute = new Date(nowTime);
+        currentMinute.setSeconds(0, 0);
+
+        let record = await this.ipRepository.findOne({
+            where: {
+                ip: cleanIp,
+                WindowStart: currentMinute
+            }
         });
 
         if (!record) {
-            // ایجاد رکورد جدید
             record = this.ipRepository.create({
-                ip: ip,
-                WindowStart: nowTime,
+                ip: cleanIp,
+                WindowStart: currentMinute,
                 requestCount: 1,
                 isBlocked: false,
                 blockUnit: null
             });
-            
+
             await this.ipRepository.save(record);
-            console.log(`IP: ${ip} - Request count: 1 - Time: ${nowTime}`);
-            return;
+            console.log(`[${nowTime.toLocaleTimeString()}] ✅ ${cleanIp} - Request: 1/${this.MAX_REQUESTS}`);
+            return { isBlocked: false, requestCount: 1, remainingRequests: this.MAX_REQUESTS - 1 };
         }
 
-        // بررسی مسدود بودن
-        if (record.isBlocked && record.blockUnit && record.blockUnit > nowTime) {
-            console.log(`IP: ${ip} is BLOCKED until ${record.blockUnit}`);
-            return;
-        }
-
-        // افزایش تعداد درخواست‌ها
         record.requestCount += 1;
-        
-        // بررسی محدودیت
+
         if (record.requestCount > this.MAX_REQUESTS) {
             record.isBlocked = true;
             record.blockUnit = new Date(nowTime.getTime() + this.BLOCK_MINUTES * 60000);
-            console.log(`IP: ${ip} has been BLOCKED for ${this.BLOCK_MINUTES} minute(s)`);
+            console.log(`[${nowTime.toLocaleTimeString()}] 🔴 ${cleanIp} has been BLOCKED for ${this.BLOCK_MINUTES} minute(s)`);
+        } else {
+            console.log(`[${nowTime.toLocaleTimeString()}] ✅ ${cleanIp} - Request: ${record.requestCount}/${this.MAX_REQUESTS}`);
         }
-        
+
         await this.ipRepository.save(record);
-        
-        console.log(`IP: ${ip} - Request count: ${record.requestCount}/${this.MAX_REQUESTS} - Time: ${nowTime}`);
+
+        return {
+            isBlocked: record.isBlocked,
+            requestCount: record.requestCount,
+            remainingRequests: Math.max(0, this.MAX_REQUESTS - record.requestCount),
+            blockUntil: record.blockUnit
+        };
     }
 }
