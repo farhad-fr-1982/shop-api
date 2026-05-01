@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,6 +19,10 @@ import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 
+import { IpTrackerModule } from './ip-tracker/ip-tracker.module';
+import { LoggerMiddleware } from './middlewares/logger/logger.middleware';
+import { IpRecord } from './ip-tracker/entities/ip-record.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,7 +37,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
       username: process.env.DB_USERNAME!,
       password: process.env.DB_PASSWORD!,
       database: process.env.DB_DATABASE!,
-       entities: [User, Address,Ticket,Category,Product,BookmarkProduct,Order,OrderItem], 
+       entities: [User, Address,Ticket,Category,Product,BookmarkProduct,Order,OrderItem,IpRecord], 
       // autoLoadEntities: true,
       synchronize: true,
     }),
@@ -44,8 +48,15 @@ import { OrderItem } from './orders/entities/order-item.entity';
     ProductsModule,
     CategoriesModule,
     OrdersModule,
+    IpTrackerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); // برای همه مسیرها
+  }
+}
