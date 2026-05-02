@@ -4,7 +4,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import type { Response } from 'express';
 import UserRoleEnum from './enums/userRoleEnum';
+import { ApiExcludeController, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
+// @ApiExcludeController()
+@ApiTags('Users - مدیریت کاربران')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
@@ -58,6 +61,7 @@ export class UsersController {
     })
   }
 
+  // @ApiExcludeEndpoint()
   @Delete(':id')
   async remove(@Param('id') id: string, @Res() res: Response) {
     const result = await this.usersService.remove(+id);
