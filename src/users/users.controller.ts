@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Query, Put, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import type { Response } from 'express';
 import UserRoleEnum from './enums/userRoleEnum';
-import { ApiExcludeController, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeController, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 // @ApiExcludeController()
+@ApiBearerAuth()
 @ApiTags('Users - مدیریت کاربران')
 @Controller('users')
 export class UsersController {
@@ -39,6 +41,7 @@ export class UsersController {
     });
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
     const user = await this.usersService.findOne(+id);

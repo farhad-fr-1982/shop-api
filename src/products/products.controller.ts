@@ -4,7 +4,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import type { Response } from 'express';
 import { BookmarkProductDto } from './dto/bookmark-product.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }

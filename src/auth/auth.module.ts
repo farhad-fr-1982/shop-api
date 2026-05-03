@@ -1,27 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from '../users/users.module'; // اگر نیاز دارید
 
 @Module({
   imports: [
-    UsersModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET_KEY'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPAIRATION') as any,
-        },
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET_KEY'),
+        signOptions: { expiresIn: '7d' },
       }),
+      inject: [ConfigService],
     }),
+    UsersModule, // اگر در AuthService به UsersService نیاز دارید
   ],
-  controllers:[AuthController],
-  providers: [AuthService],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule, JwtModule],
 })
 export class AuthModule {}
