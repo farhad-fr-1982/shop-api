@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, Length, Matches, MaxLength, MinLength } from "class-validator";
-import UserRoleEnum from "../enums/userRoleEnum";
+import Role from "../enums/Role";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -24,6 +24,6 @@ export class CreateUserDto {
     password: string;
 
     @IsOptional()
-    @IsEnum(UserRoleEnum, { message: 'نقش کاربر باید user یا admin باشد' })
-    role?: UserRoleEnum;
+    @IsEnum(Role, { message: 'نقش کاربر باید user یا admin باشد' })
+    role?: Role;
 }

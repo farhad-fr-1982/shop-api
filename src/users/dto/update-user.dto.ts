@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import UserRoleEnum from "../enums/userRoleEnum";
+import Role from "../enums/Role";
 
 export class UpdateUserDto {
 
@@ -8,6 +8,6 @@ export class UpdateUserDto {
     display_name: string;
 
     @IsOptional()
-    @IsEnum(UserRoleEnum, { message: 'نقش کاربر باید user یا admin باشد' })
-    role?: UserRoleEnum;
+    @IsEnum(Role, { message: 'نقش کاربر باید user یا admin باشد' })
+    role?: Role;
 }

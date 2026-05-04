@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
-import UserRoleEnum from 'src/users/enums/userRoleEnum';
+import Role from 'src/users/enums/Role';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AuthService {
     async register(mobile: string, password: string, display_name: string) {
         const hashedPassword: string = await bcrypt.hash(password, 10)
         return this.userService.create({
-            mobile, password: hashedPassword, display_name, role: UserRoleEnum.NormalUser
+            mobile, password: hashedPassword, display_name, role: Role.NormalUser
         })
     }
 
@@ -22,7 +22,7 @@ export class AuthService {
         if (!(await bcrypt.compare(password, user.password))) throw new UnauthorizedException('اطلاعات ورود صحیح نیست')
 
         //* sub (subject) استاندارد JWT - معمولاً ID کاربر
-        const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name }
+        const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name,role:user.role }
 
         const token = this.jwtService.sign(payload)
         return{

@@ -3,11 +3,15 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import type { Response } from 'express';
-import UserRoleEnum from './enums/userRoleEnum';
-import { ApiBearerAuth, ApiExcludeController, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import Role from './enums/Role';
+import { ApiBearerAuth, ApiExcludeController, ApiExcludeEndpoint, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { RoleGuard } from 'src/auth/guards/role..guard';
 
 // @ApiExcludeController()
+// @Roles(Role.Admin, Role.Modarator)
+@UseGuards(RoleGuard)
 @ApiBearerAuth()
 @ApiTags('Users - مدیریت کاربران')
 @Controller('users')
@@ -25,15 +29,17 @@ export class UsersController {
     })
   }
 
+  @ApiQuery({ name: "role", type: String, required: false })
+  @ApiQuery({ name: "limit", type: Number, required: false })
+  @ApiQuery({ name: "page", type: Number, required: false })
   @Get()
   async findAll(
     @Res() res: Response,
-    @Query('role') role?: UserRoleEnum,
+    @Query('role') role?: Role,
     @Query('limit') limit: number = 5,
     @Query('page') page: number = 1
   ) {
-    const users = await this.usersService.findAll(role, limit, page);
-
+    const users = await this.usersService.findAll(role, +limit, +page);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: users,
@@ -68,7 +74,7 @@ export class UsersController {
   @Delete(':id')
   async remove(@Param('id') id: string, @Res() res: Response) {
     const result = await this.usersService.remove(+id);
-    
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,

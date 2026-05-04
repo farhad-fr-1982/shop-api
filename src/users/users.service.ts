@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import UserRoleEnum from './enums/userRoleEnum';
+import Role from './enums/Role';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Product } from 'src/products/entities/product.entity';
 
@@ -35,7 +35,7 @@ export class UsersService {
     }
   }
 
-  async findAll(role?: UserRoleEnum, limit: number = 5, page: number = 1) {
+  async findAll(role?: Role, limit: number = 5, page: number = 1) {
     const query = this.userRepository.createQueryBuilder('users')
     if (role) {
       query.where('role = :role', { role })
