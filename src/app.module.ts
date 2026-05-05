@@ -25,6 +25,8 @@ import { IpRecord } from './ip-tracker/entities/ip-record.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RoleGuard } from './auth/guards/role..guard';
+import { Permission } from './auth/entities/permission.entity';
+import { Role } from './auth/entities/role.entity';
 
 @Module({
   imports: [
@@ -40,7 +42,7 @@ import { RoleGuard } from './auth/guards/role..guard';
       username: process.env.DB_USERNAME!,
       password: process.env.DB_PASSWORD!,
       database: process.env.DB_DATABASE!,
-       entities: [User, Address,Ticket,Category,Product,BookmarkProduct,Order,OrderItem,IpRecord], 
+       entities: [User, Address,Ticket,Category,Product,BookmarkProduct,Order,OrderItem,IpRecord,Permission,Role], 
       // autoLoadEntities: true,
       synchronize: true,
     }),

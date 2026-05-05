@@ -8,6 +8,7 @@ import { ApiBearerAuth, ApiExcludeController, ApiExcludeEndpoint, ApiQuery, ApiT
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { RoleGuard } from 'src/auth/guards/role..guard';
+import { Permission } from 'src/auth/entities/permission.entity';
 
 // @ApiExcludeController()
 // @Roles(Role.Admin, Role.Modarator)

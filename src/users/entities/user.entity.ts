@@ -1,15 +1,15 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import Role from '../enums/Role';
+import RoleEnum from '../enums/Role';
 import { Address } from 'src/address/entities/address.entity';
 import { Ticket } from 'src/tickets/entities/ticket.entity';
 import { BookmarkProduct } from 'src/products/entities/product-bookmark.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Order } from 'src/orders/entities/order.entity';
-
+import { Role as RoleEntity } from 'src/auth/entities/role.entity';
+import { Permission } from 'src/auth/entities/permission.entity';
 
 @Entity({ name: "users" })
 export class User {
-
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -22,15 +22,15 @@ export class User {
     @Column({ nullable: true })
     password: string
 
-    @Column({ type: 'enum', enum: Role, default: Role.NormalUser })
-    role: Role
+    // اینجا اصلاح شد: enum: RoleEnum (نه Role)
+    @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.NormalUser })
+    role: RoleEnum
 
-    @OneToMany(() => Address, (order) => order.user)
+    @OneToMany(() => Order, (order) => order.user)
     orders: Order[]
 
-     @OneToMany(() => Order, (address) => address.user)
+    @OneToMany(() => Address, (address) => address.user)
     addresses: Address[]
-
 
     @ManyToMany(() => Product, (product) => product.baskets)
     @JoinTable({
@@ -45,9 +45,18 @@ export class User {
 
     @OneToMany(() => BookmarkProduct, bookmark => bookmark.user)
     bookmarks: BookmarkProduct[]
+    
     @CreateDateColumn()
     createdAt: Date
 
     @UpdateDateColumn()
     updatedAt: Date
+
+    @ManyToMany(() => RoleEntity)
+    @JoinTable({name:'user_roles'})
+    roles: RoleEntity[]
+
+    @ManyToMany(() => Permission)
+    @JoinTable({name:'user_permissons'})
+    permissions: Permission[]
 }
