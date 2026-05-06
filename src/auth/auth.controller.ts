@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Res } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -30,5 +30,11 @@ export class AuthController {
             data: login,
             message: 'شما با موفقیت وارد سیستم شدید'
         })
+    }
+
+    @Get('getUserPermission/:userId')
+    async getUserPermission(@Param('userId', ParseIntPipe) userId: number) {
+        const user = await this.authService.getUserPermission(userId);
+        return user
     }
 }

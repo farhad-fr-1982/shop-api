@@ -22,11 +22,25 @@ export class AuthService {
         if (!(await bcrypt.compare(password, user.password))) throw new UnauthorizedException('اطلاعات ورود صحیح نیست')
 
         //* sub (subject) استاندارد JWT - معمولاً ID کاربر
-        const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name,role:user.role }
+        const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name, role: user.role }
 
         const token = this.jwtService.sign(payload)
-        return{
-            accessToken:token
+        return {
+            accessToken: token
         }
+    }
+
+    async getUserPermission(userId: number): Promise<string[]> {
+        const user = await this.userService.findUserByPermission(userId);
+
+        const permissions = new Set<string>();
+
+        user.roles?.forEach(role => {
+            role.permissions?.forEach(p => permissions.add(p.name));
+        });
+
+        user.permissions?.forEach(p => permissions.add(p.name));
+
+        return Array.from(permissions)
     }
 }
