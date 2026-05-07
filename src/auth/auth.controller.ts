@@ -4,8 +4,9 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import type { Response } from 'express';
 import { Public } from "./decorators/public.decorator";
+import { ApiBearerAuth } from "@nestjs/swagger";
+import { RoleDto } from "./dto/role.dto";
 
-@Public()
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
@@ -37,4 +38,12 @@ export class AuthController {
         const user = await this.authService.getUserPermission(userId);
         return user
     }
+
+    @ApiBearerAuth()
+    @Post('role')
+    async createRole(@Body() createRole:RoleDto){
+        const role = this.authService.createRole(createRole?.name)
+        return role
+    }
+
 }
