@@ -26,6 +26,6 @@ import { Role } from './entities/role.entity'; // ✅ مسیر فایل role.ent
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, { provide: APP_GUARD, useClass: PermissionGuard }],
-  exports: [JwtStrategy, PassportModule, JwtModule, TypeOrmModule], // ✅ TypeOrmModule را هم export کنید (اختیاری)
+  exports: [JwtStrategy, PassportModule, JwtModule, TypeOrmModule], 
 })
 export class AuthModule {}
