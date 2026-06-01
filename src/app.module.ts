@@ -27,6 +27,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RoleGuard } from './auth/guards/role..guard';
 import { Permission } from './auth/entities/permission.entity';
 import { Role } from './auth/entities/role.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -34,6 +36,9 @@ import { Role } from './auth/entities/role.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    ScheduleModule.forRoot(),
+
     TypeOrmModule.forRoot({
       type: 'mysql',
       connectorPackage: 'mysql2',
@@ -54,6 +59,7 @@ import { Role } from './auth/entities/role.entity';
     CategoriesModule,
     OrdersModule,
     IpTrackerModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService,{provide:APP_GUARD,useClass:JwtAuthGuard},{provide:APP_GUARD,useClass:RoleGuard}],
