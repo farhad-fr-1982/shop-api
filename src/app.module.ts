@@ -31,7 +31,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { BullModule } from '@nestjs/bull';
 import { SmsModule } from './sms/sms.module';
-import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -63,6 +62,7 @@ import { SmsModule } from './sms/sms.module';
     OrdersModule,
     IpTrackerModule,
     TasksModule,
+    SmsModule,
 
     BullModule.forRoot({
       redis:{
