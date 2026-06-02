@@ -29,6 +29,9 @@ import { Permission } from './auth/entities/permission.entity';
 import { Role } from './auth/entities/role.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { BullModule } from '@nestjs/bull';
+import { SmsModule } from './sms/sms.module';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -60,6 +63,15 @@ import { TasksModule } from './tasks/tasks.module';
     OrdersModule,
     IpTrackerModule,
     TasksModule,
+
+    BullModule.forRoot({
+      redis:{
+        host: 'localhost',
+        port: 6379,
+      }
+    }),
+
+    SmsModule
   ],
   controllers: [AppController],
   providers: [AppService,{provide:APP_GUARD,useClass:JwtAuthGuard},{provide:APP_GUARD,useClass:RoleGuard}],
