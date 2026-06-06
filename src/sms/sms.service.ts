@@ -9,10 +9,12 @@ export class SmsService {
 
   constructor(@InjectQueue('sms-queue') private smsQueue: Queue) { }
 
-  async sendSms(mobile: string, message: string) {
-    this.smsQueue.add('send-sms',
-      { mobile, message },
-      { attempts: 3, backoff: 5000, delay: 2000, removeOnComplete: true, removeOnFail: false })
+  async sendSms(mobiles: string[], message: string) {
+    mobiles.forEach((number, index) => {
+      this.smsQueue.add('send-sms',
+        { mobiles, message },
+        { delay: (index + 1) * 10000, removeOnComplete: true, removeOnFail: false })
+    })
   }
 
 

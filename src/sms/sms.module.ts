@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { SmsController } from './sms.controller';
 import { BullModule } from '@nestjs/bull';
+import { SmsProcessors } from './processors/send-sms.processor';
 
 @Module({
   imports:[
@@ -11,7 +12,7 @@ import { BullModule } from '@nestjs/bull';
     })
   ],
   controllers: [SmsController],
-  providers: [SmsService],
-  exports: [SmsService] // اضافه کنید - سرویس را برای استفاده در ماژول‌های دیگر صادر کنید
+  providers: [SmsService,SmsProcessors],
+  exports: [SmsService] 
 })
 export class SmsModule {} 

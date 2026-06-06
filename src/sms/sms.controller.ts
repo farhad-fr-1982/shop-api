@@ -12,7 +12,7 @@ export class SmsController {
   @Public()
   @Post('send')
   async send(@Body() sendSmsDto:SendSmsDto) {
-    await this.smsService.sendSms(sendSmsDto.mobile,sendSmsDto.message)
+    await this.smsService.sendSms(sendSmsDto.mobiles,sendSmsDto.message)
     return 'SMS JOB QUEUED!'
   }
 
