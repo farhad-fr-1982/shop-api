@@ -12,6 +12,7 @@ import { Product } from '../products/entities/product.entity';
 import { OrderStatus } from './enums/order-status.entity';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class OrdersService {
@@ -27,6 +28,7 @@ export class OrdersService {
         @InjectRepository(Product)
         private productRepository: Repository<Product>,
         private readonly httpService: HttpService,
+        private eventEmitter:EventEmitter2
     ) { }
 
     // ========== متدهای اصلی سفارش ==========
@@ -85,6 +87,9 @@ export class OrdersService {
             item.order = savedOrder;
             await this.orderItemRepository.save(item);
         }
+
+        // console.log('Emitter Factor')
+        // this.eventEmitter.emit('factor.create',savedOrder)
 
         return savedOrder;
     }

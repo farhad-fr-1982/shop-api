@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { Address } from '../address/entities/address.entity';
 import { Product } from '../products/entities/product.entity';
 import { HttpModule } from '@nestjs/axios';
+import { FactorListener } from './listeners/factor.listener';
 
 @Module({
     imports: [
@@ -19,7 +20,7 @@ import { HttpModule } from '@nestjs/axios';
         }),
     ],
     controllers: [OrdersController],
-    providers: [OrdersService],
+    providers: [OrdersService,FactorListener],
     exports: [OrdersService],
 })
 export class OrdersModule {}

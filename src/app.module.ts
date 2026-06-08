@@ -31,6 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { BullModule } from '@nestjs/bull';
 import { SmsModule } from './sms/sms.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -38,6 +39,9 @@ import { SmsModule } from './sms/sms.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    //*Event Handler
+    EventEmitterModule.forRoot(),
 
     ScheduleModule.forRoot(),
 
